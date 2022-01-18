@@ -1,26 +1,26 @@
-from typing import TypedDict
+from typing import TypedDict, Dict, List
 from judge import Judge
 from utterance import Utterance
 
 class GameInfo(TypedDict):
     agent: int
-    attacVoteList: list[dict[str, int]]
+    attacVoteList: List[Dict[str, int]]
     attackedAgent: int
     cursedFox: int
     day: int
     divineResult: Judge
     executedAgent: int
-    existingRoleList: list[str]
+    existingRoleList: List[str]
     guardedAgent: int
-    lastDeadAgentList: list[int]
-    latestAttackVoteList: list[dict[str, int]]
+    lastDeadAgentList: List[int]
+    latestAttackVoteList: List[Dict[str, int]]
     latestExecutedAgent: int
-    latestVoteList: list[dict[str, int]]
+    latestVoteList: List[Dict[str, int]]
     mediumResult: Judge
-    remainTalkMap: dict[str, int]
-    remainWhisperMap: dict[str, int]
-    roleMap: dict[str, str]
-    statusMap: dict[str, str]
-    talkList: list[Utterance]
-    voteList: list[dict[str, int]]
-    whisperList: list[Utterance]
+    remainTalkMap: Dict[str, int]
+    remainWhisperMap: Dict[str, int]
+    roleMap: Dict[str, str]
+    statusMap: Dict[str, str]
+    talkList: List[Utterance]
+    voteList: List[Dict[str, int]]
+    whisperList: List[Utterance]

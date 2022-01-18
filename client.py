@@ -1,6 +1,5 @@
 import socket
 import json
-from telnetlib import GA
 from typing import Optional
 from gameinfo import GameInfo
 from player import Player

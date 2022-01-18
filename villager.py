@@ -17,6 +17,7 @@ from typing import Optional
 from judge import Judge
 from utterance import Utterance
 from re import Match
+from typing import Dict, List
 
 class Villager(Player):
     """ 村人エージェント """
@@ -28,29 +29,29 @@ class Villager(Player):
         self.me: int = 0 # 自分
         self.vote_candidate: int = -1 # 投票先
         self.game_info: Optional[GameInfo] = None # ゲーム情報
-        self.comingout_map: dict[int, str] = {} # カミングアウト状況
-        self.divination_reports: list[Judge] = [] # 占い結果報告時系列
-        self.identification_reports: list[Judge] = [] # 霊媒結果報告時系列
+        self.comingout_map: Dict[int, str] = {} # カミングアウト状況
+        self.divination_reports: List[Judge] = [] # 占い結果報告時系列
+        self.identification_reports: List[Judge] = [] # 霊媒結果報告時系列
         self.talk_list_head: int = 0 # 未解析会話の先頭インデックス
-        self.agent_list: list[int] = [] # 全エージェントのリスト
+        self.agent_list: List[int] = [] # 全エージェントのリスト
 
     def is_alive(self, agent: int) -> bool:
         """ エージェントが生きているかどうか """
         return self.game_info is not None and self.game_info["statusMap"][str(agent)] == "ALIVE"
 
-    def get_others(self, agent_list: list[int]) -> list[int]:
+    def get_others(self, agent_list: List[int]) -> List[int]:
         """ エージェントリストから自分を除いたリストを返す """
         return [a for a in agent_list if a != self.me]
 
-    def get_alive(self, agent_list: list[int]) -> list[int]:
+    def get_alive(self, agent_list: List[int]) -> List[int]:
         """ エージェントリスト中の生存エージェントのリストを返す """
         return [a for a in agent_list if self.is_alive(a)]
 
-    def get_alive_others(self, agent_list: list[int]) -> list[int]:
+    def get_alive_others(self, agent_list: List[int]) -> List[int]:
         """ エージェントリスト中の自分以外の生存エージェントのリストを返す """
         return self.get_alive(self.get_others(agent_list))
 
-    def random_select(self, agent_list: list[int]) -> int:
+    def random_select(self, agent_list: List[int]) -> int:
         """ エージェントのリストからランダムに1エージェントを選んで返す """
         return random.choice(agent_list) if agent_list else -1
 
@@ -69,13 +70,13 @@ class Villager(Player):
 
     def update(self, game_info: GameInfo) -> None:
         self.game_info = game_info # ゲーム状況更新
-        talk_list: list[Utterance] = game_info["talkList"]
+        talk_list: List[Utterance] = game_info["talkList"]
         for i in range(self.talk_list_head, len(talk_list)): # 未解析発話の解析
             talk: Utterance = talk_list[i] # 解析対象会話
             talker: int = talk["agent"] # 発言したエージェント
             if talker == self.me: # 自分の発言は解析しない
                 continue
-            sentence: list[str] = talk["text"].split()
+            sentence: List[str] = talk["text"].split()
             subject: int = talker
             offset: int = 0
             m0: Optional[Match[str]] = self.agent_pattern.match(sentence[0])
@@ -109,7 +110,7 @@ class Villager(Player):
         for j in self.divination_reports:
             if j["agent"] not in fake_seers and j["result"] == "WEREWOLF":
                 reported_wolves.add(j["target"])
-        candidates: list[int] = self.get_alive_others(list(reported_wolves))
+        candidates: List[int] = self.get_alive_others(list(reported_wolves))
         # いなければ生存偽占い師に投票
         if not candidates:
             candidates = self.get_alive(list(fake_seers))

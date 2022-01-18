@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import TypedDict, Dict
 
 class GameSetting(TypedDict):
     enableNoAttack: bool
@@ -13,7 +13,7 @@ class GameSetting(TypedDict):
     maxWhisperTurn: int
     playerNum: int
     randomSeed: int
-    roleNumMap: dict[str, int]
+    roleNumMap: Dict[str, int]
     talkOnFirstDay: bool
     timeLimit: int
     validateUtterance: bool

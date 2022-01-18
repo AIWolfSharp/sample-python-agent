@@ -77,9 +77,9 @@ class Possessed(Villager):
         if self.has_co and not self.my_judgee_queue.empty():
             judge: Judge = self.my_judgee_queue.get()
             if self.fake_role == "SEER":
-                return self.cf.divined(self.me, judge["target"], judge["result"])
+                return self.cf.divined(judge["target"], judge["result"])
             elif self.fake_role == "MEDIUM":
-                return self.cf.identified(self.me, judge["target"], judge["result"])
+                return self.cf.identified(judge["target"], judge["result"])
         # 生存人狼に投票
         candidates: list[int] = self.get_alive(self.werewolves)
         # いなければ生存対抗エージェントに投票

@@ -53,7 +53,7 @@ class Seer(Villager):
         # CO後は占い結果を報告
         if self.has_co and not self.my_judge_queue.empty():
             judge: Judge = self.my_judge_queue.get()
-            return self.cf.divined(self.me, judge["target"], judge["result"])
+            return self.cf.divined(judge["target"], judge["result"])
         # 生存人狼に投票
         candidates: list[int] = self.get_alive(self.werewolves)
         # いなければ生存偽占い師に投票

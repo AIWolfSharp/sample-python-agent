@@ -47,7 +47,7 @@ class Medium(Villager):
         # CO後は霊能行使結果を報告
         if self.has_co and not self.my_judge_queue.empty():
             judge: Judge = self.my_judge_queue.get()
-            return self.cf.identified(judge["agent"], judge["target"], judge["result"])
+            return self.cf.identified(judge["target"], judge["result"])
         # 偽占い師
         fake_seers: set[int] = set()
         for j in self.divination_reports:

@@ -1,8 +1,11 @@
 import socket
 import json
-from typing import Optional
+from typing import Optional, List
 from gameinfo import GameInfo
+from gamesetting import GameSetting
 from player import Player
+from packet import Packet
+from utterance import Utterance
 
 
 class TcpipClient:
@@ -21,8 +24,8 @@ class TcpipClient:
         if  isinstance(self.sock, socket.socket) and isinstance(response, str):
             self.sock.send((response + "\n").encode("utf-8"))
 
-    def get_response(self, packet) -> Optional[str]:
-        request = packet["request"]
+    def get_response(self, packet: Packet) -> Optional[str]:
+        request: str = packet["request"]
         if request == "NAME":
             return self.name
         elif request == "ROLE":
@@ -36,29 +39,31 @@ class TcpipClient:
         if self.game_info is None:
             return None
 
-        talk_history = packet["talkHistory"]
+        talk_history: Optional[List[Utterance]] = packet["talkHistory"]
         if talk_history is not None:
             for talk in talk_history:
-                talk_list = self.game_info["talkList"]
+                talk_list: List[Utterance] = self.game_info["talkList"]
                 if len(talk_list) == 0:
                     talk_list.append(talk)
                 else:
-                    last_talk = talk_list[-1]
+                    last_talk: Utterance = talk_list[-1]
                     if talk["day"] > last_talk["day"] or (talk["day"] == last_talk["day"] and talk["idx"] > last_talk["idx"]):
                         talk_list.append(talk)
-        whisper_history = packet["whisperHistory"]
+        whisper_history: Optional[List[Utterance]] = packet["whisperHistory"]
         if whisper_history is not None:
             for whisper in whisper_history:
-                whisper_list = self.game_info["whisperList"]
+                whisper_list: List[Utterance] = self.game_info["whisperList"]
                 if len(whisper_list) == 0:
                     whisper_list.append(whisper)
                 else:
-                    last_whisper = whisper_list[-1]
+                    last_whisper: Utterance = whisper_list[-1]
                     if whisper["day"] > last_whisper["day"] or (whisper["day"] == last_whisper["day"] and whisper["idx"] > last_whisper["idx"]):
                         whisper_list.append(whisper)
 
         if request == "INITIALIZE":
-            self.player.initialize(self.game_info, packet["gameSetting"])
+            gs : Optional[GameSetting] = packet["gameSetting"]
+            if gs is not None:
+                self.player.initialize(self.game_info, gs)
             return None
         else:
             self.player.update(self.game_info)
@@ -88,7 +93,7 @@ class TcpipClient:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.settimeout(0.001)
         self.sock.connect((self.host, self.port))
-        line = ""
+        line: str = ""
 
         while True:
 
@@ -99,7 +104,7 @@ class TcpipClient:
             except socket.timeout:
                 pass
 
-            line_list = line.split("\n", 1)
+            line_list: List[str] = line.split("\n", 1)
 
             for i in range(len(line_list) - 1):
                 if len(line_list[i]) > 0:

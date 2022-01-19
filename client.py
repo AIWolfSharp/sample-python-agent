@@ -84,9 +84,9 @@ class TcpipClient:
             elif request == "DIVINE":
                 return json.dumps({"agentIdx": self.player.divine()}, separators=(",", ":"))
             elif request == "TALK":
-                return self.player.talk().__str__()
+                return self.player.talk().get_text()
             elif request == "WHISPER":
-                return self.player.whisper().__str__()
+                return self.player.whisper().get_text()
         return None
 
     def connect(self):

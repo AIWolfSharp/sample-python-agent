@@ -7,6 +7,8 @@ possessed.py
 
 import random
 from queue import Queue
+from aiwolfpy import ContentFactory as cf
+from aiwolfpy.protocol.abstractcontent import Content
 from gameinfo import GameInfo
 from gamesetting import GameSetting
 from judge import Judge
@@ -66,20 +68,20 @@ class Possessed(Villager):
             if judge["result"] == "WEREWOLF":
                 self.werewolves.append(judge["target"])
 
-    def talk(self) -> str:
+    def talk(self) -> Content:
         if self.game_info is None:
-            return self.cf.skip()
+            return cf.skip()
         # 予定日あるいは人狼を発見したらCO
         if self.fake_role != "VILLAGER" and not self.has_co and (self.game_info["day"] == self.co_date or self.werewolves):
             self.has_co = True
-            return self.cf.comingout(self.me, self.fake_role)
+            return cf.comingout(self.me, self.fake_role)
         # CO後は判定結果を報告
         if self.has_co and not self.my_judgee_queue.empty():
             judge: Judge = self.my_judgee_queue.get()
             if self.fake_role == "SEER":
-                return self.cf.divined(judge["target"], judge["result"])
+                return cf.divined(judge["target"], judge["result"])
             elif self.fake_role == "MEDIUM":
-                return self.cf.identified(judge["target"], judge["result"])
+                return cf.identified(judge["target"], judge["result"])
         # 生存人狼に投票
         candidates: list[int] = self.get_alive(self.werewolves)
         # いなければ生存対抗エージェントに投票
@@ -92,5 +94,5 @@ class Possessed(Villager):
         if self.vote_candidate == -1 or self.vote_candidate not in candidates:
             self.vote_candidate = self.random_select(candidates)
             if self.vote_candidate != -1:
-                return self.cf.vote(self.vote_candidate)
-        return self.cf.skip()
+                return cf.vote(self.vote_candidate)
+        return cf.skip()

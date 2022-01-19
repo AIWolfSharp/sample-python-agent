@@ -5,6 +5,8 @@ medium.py
 
 """
 
+from aiwolfpy import ContentFactory as cf
+from aiwolfpy.protocol.abstractcontent import Content
 from gameinfo import GameInfo
 from gamesetting import GameSetting
 from villager import Villager
@@ -37,17 +39,17 @@ class Medium(Villager):
             if judge["result"]  == "WEREWOLF":
                 self.found_wolf = True
 
-    def talk(self) -> str:
+    def talk(self) -> Content:
         if self.game_info is None:
-            return self.cf.skip()
+            return cf.skip()
         # 予定日あるいは人狼を発見したらCO
         if not self.has_co and (self.game_info["day"] == self.co_date or self.found_wolf):
             self.has_co = True
-            return self.cf.comingout(self.me, "MEDIUM")
+            return cf.comingout(self.me, "MEDIUM")
         # CO後は霊能行使結果を報告
         if self.has_co and not self.my_judge_queue.empty():
             judge: Judge = self.my_judge_queue.get()
-            return self.cf.identified(judge["target"], judge["result"])
+            return cf.identified(judge["target"], judge["result"])
         # 偽占い師
         fake_seers: set[int] = set()
         for j in self.divination_reports:
@@ -74,5 +76,5 @@ class Medium(Villager):
         if self.vote_candidate == -1 or self.vote_candidate not in candidates:
             self.vote_candidate = self.random_select(candidates)
             if self.vote_candidate != -1:
-                return self.cf.vote(self.vote_candidate) 
-        return self.cf.skip()
+                return cf.vote(self.vote_candidate) 
+        return cf.skip()

@@ -1,3 +1,5 @@
+from aiwolfpy import ContentFactory as cf
+from aiwolfpy.protocol.contents import Content
 from gameinfo import GameInfo
 from gamesetting import GameSetting
 
@@ -28,8 +30,8 @@ class Player:
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
         self.me = game_info["agent"]
 
-    def talk(self) -> str:
-        return "Over"
+    def talk(self) -> Content:
+        return cf.over()
 
     def update(self, game_info: GameInfo) -> None:
         pass
@@ -37,5 +39,5 @@ class Player:
     def vote(self) -> int:
         return self.me
 
-    def whisper(self) -> str:
-        return "Over"
+    def whisper(self) -> Content:
+        return cf.over()

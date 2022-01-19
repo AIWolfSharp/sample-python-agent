@@ -8,8 +8,8 @@ villager.py
 import random
 import re
 from typing import Pattern
-import aiwolfpy
-from aiwolfpy.protocol.contentfactory import ContentFactory
+from aiwolfpy import ContentFactory as cf
+from aiwolfpy.protocol.contents import Content
 from gameinfo import GameInfo
 from gamesetting import GameSetting
 from player import Player
@@ -22,7 +22,6 @@ from typing import Dict, List
 class Villager(Player):
     """ 村人エージェント """
 
-    cf: ContentFactory = aiwolfpy.ContentFactory()
     agent_pattern: Pattern[str] = re.compile("Agent\\[(..)\\]")
 
     def __init__(self) -> None:
@@ -97,7 +96,7 @@ class Villager(Player):
                     self.identification_reports.append({"day": game_info["day"], "agent": subject, "target": int(m1.group(1)), "result": sentence[offset+2]})
         self.talk_list_head = len(talk_list) # すべてを解析済みとする
 
-    def talk(self) -> str:
+    def talk(self) -> Content:
         # 会話をしながら投票先を決めていく
 
         # 村人である自分を人狼と判定した偽占い師のリスト
@@ -121,8 +120,8 @@ class Villager(Player):
         if self.vote_candidate == -1 or self.vote_candidate not in candidates:
             self.vote_candidate = self.random_select(candidates)
             if self.vote_candidate != -1:
-                return self.cf.vote(self.vote_candidate) 
-        return self.cf.skip()
+                return cf.vote(self.vote_candidate) 
+        return cf.skip()
 
     def vote(self) -> int:
         return self.vote_candidate if self.vote_candidate != -1 else self.me
@@ -136,7 +135,7 @@ class Villager(Player):
     def guard(self) -> int:
         raise Exception("Unexpected function call") # 誤使用の場合例外送出
 
-    def whisper(self) -> str:
+    def whisper(self) -> Content:
         raise Exception("Unexpected function call") # 誤使用の場合例外送出
 
     def finish(self) -> None:

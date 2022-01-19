@@ -6,6 +6,8 @@ seer.py
 """
 
 from queue import Queue
+from aiwolfpy import ContentFactory as cf
+from aiwolfpy.protocol.abstractcontent import Content
 from gameinfo import GameInfo
 from gamesetting import GameSetting
 from judge import Judge
@@ -43,17 +45,17 @@ class Seer(Villager):
             if judge["result"]  == "WEREWOLF":
                 self.werewolves.append(judge["target"])
 
-    def talk(self) -> str:
+    def talk(self) -> Content:
         if self.game_info is None:
-            return self.cf.skip()
+            return cf.skip()
         # 予定日あるいは人狼を発見したらCO
         if not self.has_co and (self.game_info["day"] == self.co_date or self.werewolves):
             self.has_co = True
-            return self.cf.comingout(self.me, "SEER")
+            return cf.comingout(self.me, "SEER")
         # CO後は占い結果を報告
         if self.has_co and not self.my_judge_queue.empty():
             judge: Judge = self.my_judge_queue.get()
-            return self.cf.divined(judge["target"], judge["result"])
+            return cf.divined(judge["target"], judge["result"])
         # 生存人狼に投票
         candidates: list[int] = self.get_alive(self.werewolves)
         # いなければ生存偽占い師に投票
@@ -66,8 +68,8 @@ class Seer(Villager):
         if self.vote_candidate == -1 or self.vote_candidate not in candidates:
             self.vote_candidate = self.random_select(candidates)
             if self.vote_candidate != -1:
-                return self.cf.vote(self.vote_candidate) 
-        return self.cf.skip()
+                return cf.vote(self.vote_candidate) 
+        return cf.skip()
 
     def divine(self) -> int:
         # まだ占っていないエージェントからランダムに占う

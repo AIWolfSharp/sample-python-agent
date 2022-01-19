@@ -5,6 +5,8 @@ werewolf.py
 
 """
 
+from aiwolfpy import ContentFactory as cf
+from aiwolfpy.protocol.contents import Content
 import random
 from gameinfo import GameInfo
 from gamesetting import GameSetting
@@ -47,23 +49,23 @@ class Werewolf(Possessed):
         if target == -1:
             return None
         # 偽判定結果の決定
-        result = "HUMAN"
+        result: str = "HUMAN"
         # 人間が偽占い対象の場合偽人狼に余裕があれば30%の確率で人狼と判定
         if target in self.humans:
             if len(self.werewolves) < self.num_wolves and random.random() < 0.3:
                 result = "WEREWOLF"
         return { "day":self.game_info["day"], "agent":self.me, "target":target, "result":result}
 
-    def day_start(self):
+    def day_start(self) -> None:
         super().day_start()
         self.attack_vote_candidate = -1
 
-    def whisper(self):
+    def whisper(self) -> Content:
         if self.game_info is None:
-            return self.cf.skip()
+            return cf.skip()
         # 初日は騙る役職を宣言し以降は襲撃投票先を宣言
         if self.game_info["day"] == 0:
-            return self.cf.comingout(self.me, self.fake_role)
+            return cf.comingout(self.me, self.fake_role)
         # 襲撃投票先を決定
         candidates: list[int] = []
         # まずカミングアウトした人間から
@@ -75,8 +77,8 @@ class Werewolf(Possessed):
         if self.attack_vote_candidate == -1 or self.attack_vote_candidate not in candidates:
             self.attack_vote_candidate = self.random_select(candidates)
             if self.attack_vote_candidate != -1:
-                return self.cf.attack(self.attack_vote_candidate)
-        return self.cf.skip()
+                return cf.attack(self.attack_vote_candidate)
+        return cf.skip()
 
-    def attack(self):
+    def attack(self) -> int:
         return self.attack_vote_candidate if self.attack_vote_candidate != -1 else self.me

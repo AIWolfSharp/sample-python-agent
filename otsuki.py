@@ -1,3 +1,4 @@
+from aiwolfpy.protocol.abstractcontent import Content
 from gameinfo import GameInfo
 from player import Player
 from villager import Villager
@@ -53,7 +54,7 @@ class OtsukiAgent(Player):
             self.player = self.werewolf
         self.player.initialize(game_info, game_setting)
         
-    def talk(self) -> str:
+    def talk(self) -> Content:
         return self.player.talk()
         
     def update(self, game_info: GameInfo) -> None:
@@ -62,5 +63,5 @@ class OtsukiAgent(Player):
     def vote(self) -> int:
         return self.player.vote()
 
-    def whisper(self) -> str:
+    def whisper(self) -> Content:
         return self.player.whisper()

@@ -1,5 +1,6 @@
 from aiwolfpy.protocol.abstractcontent import Content
 from gameinfo import GameInfo
+from gamesetting import GameSetting
 from player import Player
 from villager import Villager
 from bodyguard import Bodyguard
@@ -38,7 +39,7 @@ class OtsukiAgent(Player):
     def guard(self) -> int:
         return self.player.guard()
 
-    def initialize(self, game_info: GameInfo, game_setting: dict) -> None:
+    def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
         role = game_info["roleMap"][str(game_info["agent"])]
         if role == "VILLAGER":
             self.player = self.villager

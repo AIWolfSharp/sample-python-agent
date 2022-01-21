@@ -126,7 +126,7 @@ class Villager(Player):
     def vote(self) -> int:
         return self.vote_candidate if self.vote_candidate != -1 else self.me
 
-    def attack(selt) -> int:
+    def attack(self) -> int:
         raise Exception("Unexpected function call") # 誤使用の場合例外送出
 
     def divine(self) -> int:

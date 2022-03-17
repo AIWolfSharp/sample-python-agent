@@ -18,13 +18,10 @@
 import random
 from typing import Dict, List, Optional
 
-from aiwolf.agent import Agent, Role, Species, Status
-from aiwolf.content import Content, Topic, VoteContentBuilder
-from aiwolf.gameinfo import GameInfo
-from aiwolf.gamesetting import GameSetting
-from aiwolf.judge import Judge
-from aiwolf.player import AbstractPlayer
-from aiwolf.utterance import Talk
+from aiwolf import (AbstractPlayer, Agent, Content, GameInfo, GameSetting,
+                    Judge, Role, Species, Status, Talk, Topic,
+                    VoteContentBuilder)
+
 from const import Const
 
 

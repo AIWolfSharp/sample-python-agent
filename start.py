@@ -17,8 +17,9 @@
 # limitations under the License.
 
 from argparse import ArgumentParser
-from aiwolf.client import TcpipClient
-from aiwolf.player import AbstractPlayer
+
+from aiwolf import AbstractPlayer, TcpipClient
+
 from sample import SamplePlayer
 
 if __name__ == "__main__":

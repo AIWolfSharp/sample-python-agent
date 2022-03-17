@@ -18,12 +18,9 @@
 import random
 from typing import List, Optional
 
-from aiwolf.agent import Agent, Role, Species
-from aiwolf.content import (AttackContentBuilder, ComingoutContentBuilder,
-                            Content)
-from aiwolf.gameinfo import GameInfo
-from aiwolf.gamesetting import GameSetting
-from aiwolf.judge import Judge
+from aiwolf import (Agent, AttackContentBuilder, ComingoutContentBuilder,
+                    Content, GameInfo, GameSetting, Judge, Role, Species)
+
 from const import Const
 from possessed import SamplePossessed
 

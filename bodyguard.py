@@ -17,11 +17,9 @@
 
 from typing import List
 
-from aiwolf.agent import Agent, Role, Species
-from aiwolf.gameinfo import GameInfo
-from aiwolf.gamesetting import GameSetting
-from const import Const
+from aiwolf import Agent, GameInfo, GameSetting, Role, Species
 
+from const import Const
 from villager import SampleVillager
 
 

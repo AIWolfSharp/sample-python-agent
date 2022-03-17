@@ -19,13 +19,11 @@ import random
 from queue import Queue
 from typing import List, Optional
 
-from aiwolf.agent import Agent, Role, Species
-from aiwolf.content import (ComingoutContentBuilder, Content,
-                            DivinedResultContentBuilder, IdentContentBuilder,
-                            VoteContentBuilder)
-from aiwolf.gameinfo import GameInfo
-from aiwolf.gamesetting import GameSetting
-from aiwolf.judge import Judge
+from aiwolf import (Agent, ComingoutContentBuilder, Content,
+                    DivinedResultContentBuilder, GameInfo, GameSetting,
+                    IdentContentBuilder, Judge, Role, Species,
+                    VoteContentBuilder)
+
 from const import Const
 from villager import SampleVillager
 

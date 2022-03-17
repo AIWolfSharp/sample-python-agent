@@ -15,8 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from aiwolf.constant import Constant
-from aiwolf.content import Content, OverContentBuilder, SkipContentBuilder
+from aiwolf import Constant, Content, OverContentBuilder, SkipContentBuilder
 
 
 class Const:

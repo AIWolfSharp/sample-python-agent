@@ -15,11 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from aiwolf.agent import Agent, Role
-from aiwolf.content import Content
-from aiwolf.gameinfo import GameInfo
-from aiwolf.gamesetting import GameSetting
-from aiwolf.player import AbstractPlayer
+from aiwolf import AbstractPlayer, Agent, Content, GameInfo, GameSetting, Role
+
 from bodyguard import SampleBodyguard
 from medium import SampleMedium
 from possessed import SamplePossessed

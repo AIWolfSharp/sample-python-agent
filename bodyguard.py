@@ -17,9 +17,8 @@
 
 from typing import List
 
-from aiwolf import Agent, GameInfo, GameSetting, Role, Species
+from aiwolf import Agent, Constant, GameInfo, GameSetting, Role, Species
 
-from const import Const
 from villager import SampleVillager
 
 
@@ -28,11 +27,11 @@ class SampleBodyguard(SampleVillager):
 
     def __init__(self) -> None:
         super().__init__()
-        self.to_be_guarded: Agent = Const.AGENT_NONE  # 護衛対象
+        self.to_be_guarded: Agent = Constant.AGENT_NONE  # 護衛対象
 
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
         super().initialize(game_info, game_setting)
-        self.to_be_guarded = Const.AGENT_NONE
+        self.to_be_guarded = Constant.AGENT_NONE
 
     def guard(self) -> Agent:
         # 非偽生存自称占い師を護衛
@@ -44,6 +43,6 @@ class SampleBodyguard(SampleVillager):
         if not candidates:
             candidates = self.get_alive_others(self.agent_list)
         # 初回あるいは変更ありの場合，護衛先を更新
-        if self.to_be_guarded is Const.AGENT_NONE or self.to_be_guarded not in candidates:
+        if self.to_be_guarded is Constant.AGENT_NONE or self.to_be_guarded not in candidates:
             self.to_be_guarded = self.random_select(list(set(candidates)))
-        return self.to_be_guarded if self.to_be_guarded is not Const.AGENT_NONE else self.me
+        return self.to_be_guarded if self.to_be_guarded is not Constant.AGENT_NONE else self.me

@@ -19,12 +19,11 @@ import random
 from queue import Queue
 from typing import List, Optional
 
-from aiwolf import (Agent, ComingoutContentBuilder, Content,
+from aiwolf import (Agent, ComingoutContentBuilder, Constant, Content,
                     DivinedResultContentBuilder, GameInfo, GameSetting,
                     IdentContentBuilder, Judge, Role, Species,
                     VoteContentBuilder)
 
-from const import Const
 from villager import SampleVillager
 
 
@@ -55,18 +54,18 @@ class SamplePossessed(SampleVillager):
         """ 偽判定を生成 """
         if self.game_info is None:
             return None
-        target: Agent = Const.AGENT_NONE
+        target: Agent = Constant.AGENT_NONE
         if self.fake_role is Role.SEER:  # 占い師騙りの場合ランダム
             if self.game_info.day != 0:
                 target = self.random_select(self.get_alive(self.not_judged_agents))
         elif self.fake_role is Role.MEDIUM:
-            target = self.game_info.executed_agent if self.game_info.executed_agent is not None else Const.AGENT_NONE
+            target = self.game_info.executed_agent if self.game_info.executed_agent is not None else Constant.AGENT_NONE
         # 偽判定結果の決定
         result: Species = Species.HUMAN
         # 偽人狼に余裕があれば50%の確率で人狼と判定
         if len(self.werewolves) < self.num_wolves and random.random() < 0.5:
             result = Species.WEREWOLF
-        return None if target is Const.AGENT_NONE else Judge(self.me, self.game_info.day, target, result)
+        return None if target is Constant.AGENT_NONE else Judge(self.me, self.game_info.day, target, result)
 
     def day_start(self) -> None:
         super().day_start()
@@ -81,7 +80,7 @@ class SamplePossessed(SampleVillager):
 
     def talk(self) -> Content:
         if self.game_info is None:
-            return Const.CONTENT_SKIP
+            return type(self).CONTENT_SKIP
         # 予定日あるいは人狼を発見したらCO
         if self.fake_role is not Role.VILLAGER and not self.has_co and (self.game_info.day == self.co_date or self.werewolves):
             self.has_co = True
@@ -102,8 +101,8 @@ class SamplePossessed(SampleVillager):
         if not candidates:
             candidates = self.get_alive_others(self.agent_list)
         # 初めての投票先宣言あるいは変更ありの場合，投票先宣言
-        if self.vote_candidate is Const.AGENT_NONE or self.vote_candidate not in candidates:
+        if self.vote_candidate is Constant.AGENT_NONE or self.vote_candidate not in candidates:
             self.vote_candidate = self.random_select(candidates)
-            if self.vote_candidate is not Const.AGENT_NONE:
+            if self.vote_candidate is not Constant.AGENT_NONE:
                 return Content(VoteContentBuilder(self.vote_candidate))
-        return Const.CONTENT_SKIP
+        return type(self).CONTENT_SKIP

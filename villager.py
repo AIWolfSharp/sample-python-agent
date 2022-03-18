@@ -18,19 +18,19 @@
 import random
 from typing import Dict, List, Optional
 
-from aiwolf import (AbstractPlayer, Agent, Content, GameInfo, GameSetting,
-                    Judge, Role, Species, Status, Talk, Topic,
-                    VoteContentBuilder)
-
-from const import Const
+from aiwolf import (AbstractPlayer, Agent, Constant, Content, GameInfo,
+                    GameSetting, Judge, Role, SkipContentBuilder, Species,
+                    Status, Talk, Topic, VoteContentBuilder)
 
 
 class SampleVillager(AbstractPlayer):
     """ サンプル村人エージェント """
 
+    CONTENT_SKIP = Content(SkipContentBuilder())
+
     def __init__(self) -> None:
-        self.me: Agent = Const.AGENT_NONE  # 自分
-        self.vote_candidate: Agent = Const.AGENT_NONE  # 投票先
+        self.me: Agent = Constant.AGENT_NONE  # 自分
+        self.vote_candidate: Agent = Constant.AGENT_NONE  # 投票先
         self.game_info: Optional[GameInfo] = None  # ゲーム情報
         self.comingout_map: Dict[Agent, Role] = {}  # カミングアウト状況
         self.divination_reports: List[Judge] = []  # 占い結果報告時系列
@@ -56,7 +56,7 @@ class SampleVillager(AbstractPlayer):
 
     def random_select(self, agent_list: List[Agent]) -> Agent:
         """ エージェントのリストからランダムに1エージェントを選んで返す """
-        return random.choice(agent_list) if agent_list else Const.AGENT_NONE
+        return random.choice(agent_list) if agent_list else Constant.AGENT_NONE
 
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
         self.game_info = game_info
@@ -69,7 +69,7 @@ class SampleVillager(AbstractPlayer):
 
     def day_start(self) -> None:
         self.talk_list_head = 0
-        self.vote_candidate = Const.AGENT_NONE
+        self.vote_candidate = Constant.AGENT_NONE
 
     def update(self, game_info: GameInfo) -> None:
         self.game_info = game_info  # ゲーム状況更新
@@ -102,14 +102,14 @@ class SampleVillager(AbstractPlayer):
         if not candidates:
             candidates = self.get_alive_others(self.agent_list)
         # 初めての投票先宣言あるいは変更ありの場合，投票先宣言
-        if self.vote_candidate is Const.AGENT_NONE or self.vote_candidate not in candidates:
+        if self.vote_candidate is Constant.AGENT_NONE or self.vote_candidate not in candidates:
             self.vote_candidate = self.random_select(list(set(candidates)))
-            if self.vote_candidate is not Const.AGENT_NONE:
+            if self.vote_candidate is not Constant.AGENT_NONE:
                 return Content(VoteContentBuilder(self.vote_candidate))
-        return Const.CONTENT_SKIP
+        return type(self).CONTENT_SKIP
 
     def vote(self) -> Agent:
-        return self.vote_candidate if self.vote_candidate is not Const.AGENT_NONE else self.me
+        return self.vote_candidate if self.vote_candidate is not Constant.AGENT_NONE else self.me
 
     def attack(self) -> Agent:
         raise Exception("Unexpected function call")  # 誤使用の場合例外送出

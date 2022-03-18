@@ -18,11 +18,10 @@
 from queue import Queue
 from typing import List, Optional
 
-from aiwolf import (Agent, ComingoutContentBuilder, Content, GameInfo,
-                    GameSetting, IdentContentBuilder, Judge, Role, Species,
-                    VoteContentBuilder)
+from aiwolf import (Agent, ComingoutContentBuilder, Constant, Content,
+                    GameInfo, GameSetting, IdentContentBuilder, Judge, Role,
+                    Species, VoteContentBuilder)
 
-from const import Const
 from villager import SampleVillager
 
 
@@ -53,7 +52,7 @@ class SampleMedium(SampleVillager):
 
     def talk(self) -> Content:
         if self.game_info is None:
-            return Const.CONTENT_SKIP
+            return type(self).CONTENT_SKIP
         # 予定日あるいは人狼を発見したらCO
         if not self.has_co and (self.game_info.day == self.co_date or self.found_wolf):
             self.has_co = True
@@ -76,8 +75,8 @@ class SampleMedium(SampleVillager):
         if not candidates:
             candidates = self.get_alive_others(self.agent_list)
         # 初めての投票先宣言あるいは変更ありの場合，投票先宣言
-        if self.vote_candidate is Const.AGENT_NONE or self.vote_candidate not in candidates:
+        if self.vote_candidate is Constant.AGENT_NONE or self.vote_candidate not in candidates:
             self.vote_candidate = self.random_select(candidates)
-            if self.vote_candidate is not Const.AGENT_NONE:
+            if self.vote_candidate is not Constant.AGENT_NONE:
                 return Content(VoteContentBuilder(self.vote_candidate))
-        return Const.CONTENT_SKIP
+        return type(self).CONTENT_SKIP

@@ -26,42 +26,46 @@ from possessed import SamplePossessed
 
 
 class SampleWerewolf(SamplePossessed):
-    """ サンプル人狼エージェント """
+    """Sample werewolf agent."""
 
     def __init__(self) -> None:
+        """Initialize a new instance of SampleWerewolf."""
         super().__init__()
-        self.allies: List[Agent] = []  # 味方リスト
-        self.humans: List[Agent] = []  # 人間リスト
-        self.attack_vote_candidate: Agent = Constant.AGENT_NONE  # 襲撃投票先
+        self.allies: List[Agent] = []  # Alliess.
+        self.humans: List[Agent] = []  # Humans.
+        self.attack_vote_candidate: Agent = Constant.AGENT_NONE  # Candidate for attack voting.
 
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
         super().initialize(game_info, game_setting)
         if self.game_info is not None:
             self.allies = list(self.game_info.role_map.keys())
         self.humans = [a for a in self.get_others(self.agent_list) if a not in self.allies]
-        # 1～3日目からランダムにカミングアウトする日付を決める
+        # Do comingout on the day that randomly selected from the 1st, 2nd and 3rd day.
         self.co_date = random.randint(1, 3)
-        # ランダムに騙る役職を決める
+        # Choose fake role randomly.
         self.fake_role = Role.VILLAGER
         if self.game_info is not None:
             self.fake_role = random.choice([r for r in [Role.VILLAGER, Role.SEER, Role.MEDIUM] if r in self.game_info.existing_role_list])
 
     def get_fake_judge(self) -> Optional[Judge]:
-        ''' 偽判定を生成 '''
+        """Generate a fake judgement."""
         if self.game_info is None:
             return None
-        # 判定対象の決定
+        # Determine the target of the fake judgement.
         target: Agent = Constant.AGENT_NONE
-        if self.fake_role is Role.SEER:  # 占い師騙りの場合ランダム
+        if self.fake_role is Role.SEER:  # Fake seer chooses a target randomly.
             if self.game_info.day != 0:
                 target = self.random_select(self.get_alive(self.not_judged_agents))
         elif self.fake_role is Role.MEDIUM:
             target = self.game_info.executed_agent if self.game_info.executed_agent is not None else Constant.AGENT_NONE
         if target is Constant.AGENT_NONE:
             return None
-        # 偽判定結果の決定
+        # Determine a fake result.
         result: Species = Species.HUMAN
-        # 人間が偽占い対象の場合偽人狼に余裕があれば30%の確率で人狼と判定
+        # If the target is a human
+        # and the number of werewolves found is less than the total number of werewolves,
+        # judge as a werewolf with a probability of 0.3.
+
         if target in self.humans:
             if len(self.werewolves) < self.num_wolves and random.random() < 0.3:
                 result = Species.WEREWOLF
@@ -74,16 +78,17 @@ class SampleWerewolf(SamplePossessed):
     def whisper(self) -> Content:
         if self.game_info is None:
             return type(self).CONTENT_SKIP
-        # 初日は騙る役職を宣言し以降は襲撃投票先を宣言
+        # Declare the fake role on the 1st day,
+        # and declare the target of attack vote after that.
         if self.game_info.day == 0:
             return Content(ComingoutContentBuilder(self.me, self.fake_role))
-        # 襲撃投票先を決定
-        # まずカミングアウトした人間から
+        # Choose the target of attack vote.
+        # Vote for one of the agent that did comingout.
         candidates = [a for a in self.get_alive(self.humans) if a in self.comingout_map.keys()]
-        # いなければ人間から
+        # Vote for one of the alive human agents if there are no candidates.
         if not candidates:
             candidates = self.get_alive(self.humans)
-        # 初めての襲撃投票先宣言あるいは変更ありの場合，襲撃投票先宣言
+        # Declare which to vote for if not declare yet or the candidate is changed.
         if self.attack_vote_candidate is Constant.AGENT_NONE or self.attack_vote_candidate not in candidates:
             self.attack_vote_candidate = self.random_select(candidates)
             if self.attack_vote_candidate is not Constant.AGENT_NONE:

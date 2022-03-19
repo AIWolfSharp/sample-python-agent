@@ -28,22 +28,23 @@ from villager import SampleVillager
 
 
 class SamplePossessed(SampleVillager):
-    """ サンプル裏切り者エージェント """
+    """Sample possessed agent."""
 
     def __init__(self) -> None:
+        """Initialize a new instance of SamplePossessed."""
         super().__init__()
-        self.fake_role: Role = Role.SEER  # 騙る役職
-        self.co_date: int = 1  # CO予定日
-        self.has_co: bool = False  # CO済ならtrue
-        self.my_judgee_queue: Queue[Judge] = Queue()  # 偽判定結果の待ち行列
-        self.not_judged_agents: List[Agent] = []  # 未判定エージェント
-        self.num_wolves: int = 0  # 人狼の数
-        self.werewolves: List[Agent] = []  # 偽人狼
+        self.fake_role: Role = Role.SEER  # Fake role.
+        self.co_date: int = 1  # Scheduled comingout date.
+        self.has_co: bool = False  # Whether or not comingout has done.
+        self.my_judgee_queue: Queue[Judge] = Queue()  # Queue of fake judgements.
+        self.not_judged_agents: List[Agent] = []  # Agents that have not been judged.
+        self.num_wolves: int = 0  # The number of werewolves.
+        self.werewolves: List[Agent] = []  # Fake werewolves.
 
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
         super().initialize(game_info, game_setting)
         self.fake_role = Role.SEER
-        self.co_date = 1  # いきなりCO
+        self.co_date = 1  # Do comingout on the first day.
         self.has_co = False
         self.my_judgee_queue = Queue()
         self.not_judged_agents = self.get_others(self.agent_list)
@@ -51,25 +52,26 @@ class SamplePossessed(SampleVillager):
         self.werewolves = []
 
     def get_fake_judge(self) -> Optional[Judge]:
-        """ 偽判定を生成 """
+        """Generate a fake judgement."""
         if self.game_info is None:
             return None
         target: Agent = Constant.AGENT_NONE
-        if self.fake_role is Role.SEER:  # 占い師騙りの場合ランダム
+        if self.fake_role is Role.SEER:  # Fake seer chooses a target randomly.
             if self.game_info.day != 0:
                 target = self.random_select(self.get_alive(self.not_judged_agents))
         elif self.fake_role is Role.MEDIUM:
             target = self.game_info.executed_agent if self.game_info.executed_agent is not None else Constant.AGENT_NONE
-        # 偽判定結果の決定
+        # Determine a fake result.
         result: Species = Species.HUMAN
-        # 偽人狼に余裕があれば50%の確率で人狼と判定
+        # If the number of werewolves found is less than the total number of werewolves,
+        # judge as a werewolf with a probability of 0.5.
         if len(self.werewolves) < self.num_wolves and random.random() < 0.5:
             result = Species.WEREWOLF
         return None if target is Constant.AGENT_NONE else Judge(self.me, self.game_info.day, target, result)
 
     def day_start(self) -> None:
         super().day_start()
-        # 偽判定結果の処理
+        # Process the fake judgement.
         judge: Optional[Judge] = self.get_fake_judge()
         if judge is not None:
             self.my_judgee_queue.put(judge)
@@ -81,26 +83,27 @@ class SamplePossessed(SampleVillager):
     def talk(self) -> Content:
         if self.game_info is None:
             return type(self).CONTENT_SKIP
-        # 予定日あるいは人狼を発見したらCO
+        # Do comingout if it's on scheduled day or a werewolf is found.
         if self.fake_role is not Role.VILLAGER and not self.has_co and (self.game_info.day == self.co_date or self.werewolves):
             self.has_co = True
             return Content(ComingoutContentBuilder(self.me, self.fake_role))
-        # CO後は判定結果を報告
+        # Report the judgement after doing comingout.
         if self.has_co and not self.my_judgee_queue.empty():
             judge: Judge = self.my_judgee_queue.get()
             if self.fake_role is Role.SEER:
                 return Content(DivinedResultContentBuilder(judge.target, judge.result))
             elif self.fake_role is Role.MEDIUM:
                 return Content(IdentContentBuilder(judge.target, judge.result))
-        # 生存人狼に投票
+        # Vote for one of the alive fake werewolves.
         candidates: List[Agent] = self.get_alive(self.werewolves)
-        # いなければ生存対抗エージェントに投票
+        # Vote for one of the alive agent that declared itself the same role of Possessed
+        # if there are no candidates.
         if not candidates:
             candidates = self.get_alive([a for a in self.comingout_map.keys() if self.comingout_map[a] == self.fake_role])
-        # それでもいなければ生存エージェントに投票
+        # Vite for one of the alive agents if there are no candidates.
         if not candidates:
             candidates = self.get_alive_others(self.agent_list)
-        # 初めての投票先宣言あるいは変更ありの場合，投票先宣言
+        # Declare which to vote for if not declare yet or the candidate is changed.
         if self.vote_candidate is Constant.AGENT_NONE or self.vote_candidate not in candidates:
             self.vote_candidate = self.random_select(candidates)
             if self.vote_candidate is not Constant.AGENT_NONE:

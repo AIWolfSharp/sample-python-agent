@@ -23,26 +23,27 @@ from villager import SampleVillager
 
 
 class SampleBodyguard(SampleVillager):
-    """ サンプル狩人エージェント """
+    """Sample bodyguard agent."""
 
     def __init__(self) -> None:
+        """Initialize a new instance of SampleBodyguard."""
         super().__init__()
-        self.to_be_guarded: Agent = Constant.AGENT_NONE  # 護衛対象
+        self.to_be_guarded: Agent = Constant.AGENT_NONE  # Target of guard.
 
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
         super().initialize(game_info, game_setting)
         self.to_be_guarded = Constant.AGENT_NONE
 
     def guard(self) -> Agent:
-        # 非偽生存自称占い師を護衛
+        # Guaed one of the alive non-fake seers.
         candidates: List[Agent] = self.get_alive([j.agent for j in self.divination_reports if j.result is not Species.WEREWOLF or j.target is not self.me])
-        # いなければ生存自称霊媒師を護衛
+        # Guaed one of the alive mediums if there are no candidates.
         if not candidates:
             candidates = [a for a in self.comingout_map if self.is_alive(a) and self.comingout_map[a] is Role.MEDIUM]
-        # いなければ生存エージェントを護衛
+        # Guaed one of the alive sagents if there are no candidates.
         if not candidates:
             candidates = self.get_alive_others(self.agent_list)
-        # 初回あるいは変更ありの場合，護衛先を更新
+        # Update a guard candidate if the candidate is changed.
         if self.to_be_guarded is Constant.AGENT_NONE or self.to_be_guarded not in candidates:
             self.to_be_guarded = self.random_select(list(set(candidates)))
         return self.to_be_guarded if self.to_be_guarded is not Constant.AGENT_NONE else self.me

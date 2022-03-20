@@ -1,4 +1,4 @@
-# Sample AIWold Python agent using aiwolf package
+# Sample AIWolf Python agent using aiwolf package
 Sample AIWolf agent written in Python using [aiwolf package](https://github.com/AIWolfSharp/aiwolf-python).
 ## Prerequisites
 * Python 3.8

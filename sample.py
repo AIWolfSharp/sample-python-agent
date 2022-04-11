@@ -27,14 +27,22 @@ from werewolf import SampleWerewolf
 
 class SamplePlayer(AbstractPlayer):
 
+    villager: AbstractPlayer
+    bodyguard: AbstractPlayer
+    medium: AbstractPlayer
+    seer: AbstractPlayer
+    possessed: AbstractPlayer
+    werewolf: AbstractPlayer
+    player: AbstractPlayer
+
     def __init__(self) -> None:
-        self.villager: AbstractPlayer = SampleVillager()
-        self.bodyguard: AbstractPlayer = SampleBodyguard()
-        self.medium: AbstractPlayer = SampleMedium()
-        self.seer: AbstractPlayer = SampleSeer()
-        self.possessed: AbstractPlayer = SamplePossessed()
-        self.werewolf: AbstractPlayer = SampleWerewolf()
-        self.player: AbstractPlayer = self.villager
+        self.villager = SampleVillager()
+        self.bodyguard = SampleBodyguard()
+        self.medium = SampleMedium()
+        self.seer = SampleSeer()
+        self.possessed = SamplePossessed()
+        self.werewolf = SampleWerewolf()
+        self.player = self.villager
 
     def attack(self) -> Agent:
         return self.player.attack()
@@ -52,18 +60,18 @@ class SamplePlayer(AbstractPlayer):
         return self.player.guard()
 
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
-        role = game_info.my_role
-        if role is Role.VILLAGER:
+        role: Role = game_info.my_role
+        if role == Role.VILLAGER:
             self.player = self.villager
-        elif role is Role.BODYGUARD:
+        elif role == Role.BODYGUARD:
             self.player = self.bodyguard
-        elif role is Role.MEDIUM:
+        elif role == Role.MEDIUM:
             self.player = self.medium
-        elif role is Role.SEER:
+        elif role == Role.SEER:
             self.player = self.seer
-        elif role is Role.POSSESSED:
+        elif role == Role.POSSESSED:
             self.player = self.possessed
-        elif role is Role.WEREWOLF:
+        elif role == Role.WEREWOLF:
             self.player = self.werewolf
         self.player.initialize(game_info, game_setting)
 

@@ -3,10 +3,17 @@ Sample AIWolf agent written in Python using [aiwolf package](https://github.com/
 ## Prerequisites
 * Python 3.8
 * [aiwolf package]((https://github.com/AIWolfSharp/aiwolf-python)). 
-You can install aiwolf package as follows,
+
+## インストール
+
 ```
-pip install git+https://github.com/AIWolfSharp/aiwolf-python.git
+poetry install
 ```
+or
+```
+pip install -r requirements.txt
+```
+
 ## How to use
 先にjacaの環境を実行する
 Suppose the AIWolf server at localhost is waiting a connection from an agent on port 10000.

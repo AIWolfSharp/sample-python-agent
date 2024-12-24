@@ -6,6 +6,7 @@ Sample AIWolf agent written in Python using [aiwolf package](https://github.com/
 
 ## インストール
 
+- poetryとpipどちらでもよい
 ```
 poetry install
 ```
@@ -15,11 +16,17 @@ pip install -r requirements.txt
 ```
 
 ## How to use
-先にjacaの環境を実行する
-Suppose the AIWolf server at localhost is waiting a connection from an agent on port 10000.
-You can connect this sample agent to the server as follows,
+1. 先にjavaの環境を実行する(エージェントを一人余る状態にしておく)
+2. pythonエージェントの起動
+
+- pip 使っている場合
 ```
 python start.py -h locahost -p 10000 -n name_you_like
+```
+
+- poetry 使っている場合
+```
+poetry run python3 start.py -h locahost -p 10000 -n name_you_like
 ```
 
 

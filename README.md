@@ -8,8 +8,14 @@ You can install aiwolf package as follows,
 pip install git+https://github.com/AIWolfSharp/aiwolf-python.git
 ```
 ## How to use
+先にjacaの環境を実行する
 Suppose the AIWolf server at localhost is waiting a connection from an agent on port 10000.
 You can connect this sample agent to the server as follows,
 ```
 python start.py -h locahost -p 10000 -n name_you_like
 ```
+
+
+※ localhostは自分のpcのipアドレス
+
+`ipconfig`で確認できる

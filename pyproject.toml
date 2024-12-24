@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "ai-wolf-sample-agent"
+version = "0.1.0"
+description = ""
+authors = ["ankuru <ankuru.ahahahaha@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+aiwolf = {git = "https://github.com/AIWolfSharp/aiwolf-python.git"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

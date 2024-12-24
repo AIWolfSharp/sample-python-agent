@@ -1,0 +1,1 @@
+aiwolf @ git+https://github.com/AIWolfSharp/aiwolf-python.git@1a04b91caff3403296fdbb126a6e15de2307fc02 ; python_version >= "3.12" and python_version < "4.0"

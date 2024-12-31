@@ -1,0 +1,1 @@
+java -cp aiwolf-server.jar;aiwolf-common.jar;aiwolf-client.jar;aiwolf-viewer.jar;jsonic-1.3.10.jar org.aiwolf.common.bin.ClientStarter %1 %2 %3 %4 %5 %6 %7 %8 %9

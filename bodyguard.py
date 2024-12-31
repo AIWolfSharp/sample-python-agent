@@ -14,7 +14,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from typing import List
 
 from aiwolf import Agent, GameInfo, GameSetting, Role, Species
@@ -22,34 +21,45 @@ from aiwolf.constant import AGENT_NONE
 
 from villager import SampleVillager
 
-
 class SampleBodyguard(SampleVillager):
-    """Sample bodyguard agent."""
+    """ボディーガードエージェントのサンプル."""
 
     to_be_guarded: Agent
-    """Target of guard."""
+    """護衛対象のエージェント。"""
 
     def __init__(self) -> None:
-        """Initialize a new instance of SampleBodyguard."""
+        """SampleBodyguard の新しいインスタンスを初期化する。"""
         super().__init__()
-        self.to_be_guarded = AGENT_NONE
+        self.to_be_guarded = AGENT_NONE  # 初期値として護衛対象を設定しない（NONE にする）。
 
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
+        """ゲーム開始時に呼び出される初期化処理。"""
         super().initialize(game_info, game_setting)
-        self.to_be_guarded = AGENT_NONE
+        self.to_be_guarded = AGENT_NONE  # 護衛対象を再度初期化。
 
     def guard(self) -> Agent:
-        # Guard one of the alive non-fake seers.
-        candidates: List[Agent] = self.get_alive([j.agent for j in self.divination_reports
-                                                  if j.result != Species.WEREWOLF or j.target != self.me])
-        # Guard one of the alive mediums if there are no candidates.
+        """護衛するエージェントを選択する。"""
+        # 1. 生存しているエージェントの中から、人狼ではないと判定された占い師を候補とする。
+        candidates: List[Agent] = self.get_alive([
+            j.agent for j in self.divination_reports  # 占い結果の中から...
+            if j.result != Species.WEREWOLF or j.target != self.me  # 自分が対象ではなく、かつ人狼でない結果。
+        ])
+
+        # 2. 候補が存在しない場合、生存している霊媒師を候補とする。
         if not candidates:
-            candidates = [a for a in self.comingout_map if self.is_alive(a)
-                          and self.comingout_map[a] == Role.MEDIUM]
-        # Guard one of the alive sagents if there are no candidates.
+            candidates = [
+                a for a in self.comingout_map  # カミングアウトマップに登録されているエージェントを...
+                if self.is_alive(a) and self.comingout_map[a] == Role.MEDIUM  # 生存している霊媒師に絞り込む。
+            ]
+
+        # 3. 候補がまだ存在しない場合、生存している他の全エージェントを候補とする。
         if not candidates:
-            candidates = self.get_alive_others(self.game_info.agent_list)
-        # Update a guard candidate if the candidate is changed.
+            candidates = self.get_alive_others(self.game_info.agent_list)  # 自分以外の生存者を取得。
+
+        # 4. 現在の護衛対象が候補に含まれない場合、または護衛対象が未設定の場合は、新しい護衛対象をランダムに選ぶ。
         if self.to_be_guarded == AGENT_NONE or self.to_be_guarded not in candidates:
-            self.to_be_guarded = self.random_select(candidates)
+            self.to_be_guarded = self.random_select(candidates)  # 候補からランダムに選択。
+
+        # 5. 最終的な護衛対象を返す。ただし、護衛対象が設定されていない場合は自分自身を護衛。
         return self.to_be_guarded if self.to_be_guarded != AGENT_NONE else self.me
+

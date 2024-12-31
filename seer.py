@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 from collections import deque
 from typing import Deque, List, Optional
 
@@ -28,66 +29,69 @@ from villager import SampleVillager
 
 
 class SampleSeer(SampleVillager):
-    """Sample seer agent."""
+    """サンプル占い師エージェント."""
 
     co_date: int
-    """Scheduled comingout date."""
+    """カミングアウトを予定している日付."""
     has_co: bool
-    """Whether or not comingout has done."""
+    """カミングアウト済みかどうか."""
     my_judge_queue: Deque[Judge]
-    """Queue of divination results."""
+    """占い結果のキュー."""
     not_divined_agents: List[Agent]
-    """Agents that have not been divined."""
+    """未占いのエージェントリスト."""
     werewolves: List[Agent]
-    """Found werewolves."""
+    """発見された人狼リスト."""
 
     def __init__(self) -> None:
-        """Initialize a new instance of SampleSeer."""
+        """SampleSeerのインスタンスを初期化."""
         super().__init__()
-        self.co_date = 0
-        self.has_co = False
-        self.my_judge_queue = deque()
-        self.not_divined_agents = []
-        self.werewolves = []
+        self.co_date = 0  # カミングアウト日付を初期化
+        self.has_co = False  # カミングアウト未実施を設定
+        self.my_judge_queue = deque()  # 占い結果キューの初期化
+        self.not_divined_agents = []  # 未占いエージェントリストの初期化
+        self.werewolves = []  # 発見された人狼リストの初期化
 
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
+        """ゲーム開始時の初期化処理."""
         super().initialize(game_info, game_setting)
-        self.co_date = 3
+        self.co_date = 3  # カミングアウトを3日目に設定
         self.has_co = False
         self.my_judge_queue.clear()
-        self.not_divined_agents = self.get_others(self.game_info.agent_list)
+        self.not_divined_agents = self.get_others(self.game_info.agent_list)  # 他のエージェントを取得
         self.werewolves.clear()
 
     def day_start(self) -> None:
+        """新しい日の開始時の処理."""
         super().day_start()
-        # Process a divination result.
+        # 占い結果の処理
         judge: Optional[Judge] = self.game_info.divine_result
         if judge is not None:
-            self.my_judge_queue.append(judge)
+            self.my_judge_queue.append(judge)  # 占い結果をキューに追加
             if judge.target in self.not_divined_agents:
-                self.not_divined_agents.remove(judge.target)
+                self.not_divined_agents.remove(judge.target)  # 占ったエージェントをリストから削除
             if judge.result == Species.WEREWOLF:
-                self.werewolves.append(judge.target)
+                self.werewolves.append(judge.target)  # 人狼ならリストに追加
 
     def talk(self) -> Content:
-        # Do comingout if it's on scheduled day or a werewolf is found.
+        """話す内容を決定."""
+        # 予定日または人狼発見時にカミングアウト
         if not self.has_co and (self.game_info.day == self.co_date or self.werewolves):
             self.has_co = True
             return Content(ComingoutContentBuilder(self.me, Role.SEER))
-        # Report the divination result after doing comingout.
+        # カミングアウト後、占い結果を報告
         if self.has_co and self.my_judge_queue:
             judge: Judge = self.my_judge_queue.popleft()
             return Content(DivinedResultContentBuilder(judge.target, judge.result))
-        # Vote for one of the alive werewolves.
+        # 生存している人狼を投票対象に設定
         candidates: List[Agent] = self.get_alive(self.werewolves)
-        # Vote for one of the alive fake seers if there are no candidates.
+        # 候補がいない場合、偽占い師を候補に追加
         if not candidates:
             candidates = self.get_alive([a for a in self.comingout_map
                                          if self.comingout_map[a] == Role.SEER])
-        # Vote for one of the alive agents if there are no candidates.
+        # さらに候補がいない場合、その他の生存者を対象に
         if not candidates:
             candidates = self.get_alive_others(self.game_info.agent_list)
-        # Declare which to vote for if not declare yet or the candidate is changed.
+        # 未宣言または候補が変わった場合、投票宣言
         if self.vote_candidate == AGENT_NONE or self.vote_candidate not in candidates:
             self.vote_candidate = self.random_select(candidates)
             if self.vote_candidate != AGENT_NONE:
@@ -95,6 +99,8 @@ class SampleSeer(SampleVillager):
         return CONTENT_SKIP
 
     def divine(self) -> Agent:
-        # Divine a agent randomly chosen from undivined agents.
+        """占い対象を決定."""
+        # 未占いのエージェントからランダムに選択
         target: Agent = self.random_select(self.not_divined_agents)
         return target if target != AGENT_NONE else self.me
+

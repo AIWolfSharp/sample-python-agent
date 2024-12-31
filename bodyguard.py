@@ -62,4 +62,3 @@ class SampleBodyguard(SampleVillager):
 
         # 5. 最終的な護衛対象を返す。ただし、護衛対象が設定されていない場合は自分自身を護衛。
         return self.to_be_guarded if self.to_be_guarded != AGENT_NONE else self.me
-

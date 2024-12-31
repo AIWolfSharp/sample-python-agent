@@ -42,6 +42,9 @@ class SampleSeer(SampleVillager):
     werewolves: List[Agent]
     """発見された人狼リスト."""
 
+    is_seer_roller: bool;
+    """占い師のローラー"""
+
     def __init__(self) -> None:
         """SampleSeerのインスタンスを初期化."""
         super().__init__()
@@ -54,7 +57,7 @@ class SampleSeer(SampleVillager):
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
         """ゲーム開始時の初期化処理."""
         super().initialize(game_info, game_setting)
-        self.co_date = 3  # カミングアウトを3日目に設定
+        self.co_date = 1  # カミングアウトを1日目に設定
         self.has_co = False
         self.my_judge_queue.clear()
         self.not_divined_agents = self.get_others(self.game_info.agent_list)  # 他のエージェントを取得
@@ -84,6 +87,9 @@ class SampleSeer(SampleVillager):
             return Content(DivinedResultContentBuilder(judge.target, judge.result))
         # 生存している人狼を投票対象に設定
         candidates: List[Agent] = self.get_alive(self.werewolves)
+
+        seer_co_count = sum(1 for agent, role in self.comingout_map.items() if role == Role.SEER)
+
         # 候補がいない場合、偽占い師を候補に追加
         if not candidates:
             candidates = self.get_alive([a for a in self.comingout_map

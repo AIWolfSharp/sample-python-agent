@@ -37,12 +37,21 @@ class SampleMedium(SampleVillager):
 
     co_date: int
     """予定されている役職カミングアウト日。"""
+
     found_wolf: bool
     """人狼が見つかったかどうかを示すフラグ。"""
+
     has_co: bool
     """役職カミングアウトを行ったかどうかを示すフラグ。"""
+
     my_judge_queue: Deque[Judge]
     """霊能結果のキュー。"""
+
+    is_seer_roller: bool
+    """占い師のローラー"""
+
+
+
 
     def __init__(self) -> None:
         """
@@ -64,7 +73,7 @@ class SampleMedium(SampleVillager):
             game_setting (GameSetting): ゲームの設定。
         """
         super().initialize(game_info, game_setting)  # 基底クラスの初期化を実行
-        self.co_date = 3  # カミングアウトする予定の日を3日目に設定
+        # self.co_date = 3  # カミングアウトする予定の日を3日目に設定
         self.found_wolf = False  # 人狼発見フラグをリセット
         self.has_co = False  # カミングアウトフラグをリセット
         self.my_judge_queue.clear()  # 霊能結果のキューをクリア
@@ -90,6 +99,34 @@ class SampleMedium(SampleVillager):
         Returns:
             Content: 発言の内容を表すContentオブジェクト。
         """
+        seer_co_count = sum(1 for agent, role in self.comingout_map.items() if role == Role.SEER)
+
+
+        alive_bodygard = [
+                a for a in self.comingout_map  # カミングアウトマップに登録されているエージェントを...
+                if self.is_alive(a) and self.comingout_map[a] == Role.BODYGUARD  # 生存している霊媒師に絞り込む。
+            ]
+
+
+        # COしているMEDIUMが1人以上いるときOCする
+        m_co_count = sum(1 for agent, role in self.comingout_map.items() if role == Role.MEDIUM)
+        if not self.has_co and m_co_count >= 1:
+            self.is_seer_roller = True; # ローラーフラグ
+            return Content(ComingoutContentBuilder(self.me, Role.MEDIUM))
+
+        # 占い師が2人COした場合にカミングアウト(狩人がいる場合のみ)
+        if alive_bodygard:
+            if not self.has_co and seer_co_count >= 2:
+                self.has_co = True  # カミングアウトフラグを更新
+                self.is_seer_roller = True; # ローラーフラグ
+                return Content(ComingoutContentBuilder(self.me, Role.MEDIUM))
+
+
+        # カミングアウト後、霊能結果を報告
+        if self.has_co and self.my_judge_queue:
+            judge: Judge = self.my_judge_queue.popleft()
+            return Content(IdentContentBuilder(judge.target, judge.result))
+
         # 指定された日、または人狼を発見した場合にカミングアウトを実行
         if not self.has_co and (self.game_info.day == self.co_date or self.found_wolf):
             self.has_co = True  # カミングアウトフラグを更新
@@ -107,6 +144,16 @@ class SampleMedium(SampleVillager):
         # 偽霊能者のリストを作成（生存者のみ）
         candidates: List[Agent] = [a for a in self.comingout_map
                                    if self.is_alive(a) and self.comingout_map[a] == Role.MEDIUM]
+
+
+
+        # 生存しているエージェントの中で、占い師としてカミングアウトしている者を選択
+        if seer_co_count >= 2:
+            candidates = [
+                agent for agent, role in self.comingout_map.items()
+                if role == Role.SEER and self.is_alive(agent)
+            ]
+
 
         # 偽霊能者がいない場合、非偽占い師による人狼判定結果を候補にする
         if not candidates:

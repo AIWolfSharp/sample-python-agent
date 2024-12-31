@@ -27,10 +27,14 @@ class SampleBodyguard(SampleVillager):
     to_be_guarded: Agent
     """護衛対象のエージェント。"""
 
+    is_seer_roller: bool;
+    """占い師のローラー"""
+
     def __init__(self) -> None:
         """SampleBodyguard の新しいインスタンスを初期化する。"""
         super().__init__()
         self.to_be_guarded = AGENT_NONE  # 初期値として護衛対象を設定しない（NONE にする）。
+
 
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
         """ゲーム開始時に呼び出される初期化処理。"""

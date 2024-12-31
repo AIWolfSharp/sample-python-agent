@@ -1,4 +1,3 @@
-#
 # villager.py
 #
 # Copyright 2022 OTSUKI Takashi
@@ -15,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import random
 from typing import Dict, List
 
@@ -28,34 +26,31 @@ from const import CONTENT_SKIP
 
 
 class SampleVillager(AbstractPlayer):
-    """サンプル村人エージェントのクラス。"""
+    """Sample villager agent."""
 
     me: Agent
-    """自分自身のエージェント。"""
-
+    """Myself."""
     vote_candidate: Agent
-    """投票候補のエージェント。"""
-
+    """Candidate for voting."""
     game_info: GameInfo
-    """現在のゲームに関する情報。"""
-
+    """Information about current game."""
     game_setting: GameSetting
-    """現在のゲームの設定。"""
-
+    """Settings of current game."""
     comingout_map: Dict[Agent, Role]
-    """エージェントが主張した役職のマッピング。"""
-
+    """Mapping between an agent and the role it claims that it is."""
     divination_reports: List[Judge]
-    """占い結果のタイムシリーズ。"""
-
+    """Time series of divination reports."""
     identification_reports: List[Judge]
-    """霊能結果のタイムシリーズ。"""
-
+    """Time series of identification reports."""
     talk_list_head: int
-    """未解析の発言リストのインデックス。"""
+    """Index of the talk to be analysed next."""
+
+    is_seer_roller: bool;
+    """占い師のローラー"""
 
     def __init__(self) -> None:
-        """SampleVillagerの新しいインスタンスを初期化します。"""
+        """Initialize a new instance of SampleVillager."""
+
         self.me = AGENT_NONE
         self.vote_candidate = AGENT_NONE
         self.game_info = None  # type: ignore
@@ -65,82 +60,81 @@ class SampleVillager(AbstractPlayer):
         self.talk_list_head = 0
 
     def is_alive(self, agent: Agent) -> bool:
-        """エージェントが生存しているかどうかを返します。
+        """Return whether the agent is alive.
 
         Args:
-            agent: 対象のエージェント。
+            agent: The agent.
 
         Returns:
-            エージェントが生存している場合はTrue、それ以外はFalse。
+            True if the agent is alive, otherwise false.
         """
         return self.game_info.status_map[agent] == Status.ALIVE
 
     def get_others(self, agent_list: List[Agent]) -> List[Agent]:
-        """自分以外のエージェントのリストを返します。
+        """Return a list of agents excluding myself from the given list of agents.
 
         Args:
-            agent_list: エージェントのリスト。
+            agent_list: The list of agent.
 
         Returns:
-            自分以外のエージェントのリスト。
+            A list of agents excluding myself from agent_list.
         """
         return [a for a in agent_list if a != self.me]
 
     def get_alive(self, agent_list: List[Agent]) -> List[Agent]:
-        """指定されたリスト内の生存しているエージェントのリストを返します。
+        """Return a list of alive agents contained in the given list of agents.
 
         Args:
-            agent_list: エージェントのリスト。
+            agent_list: The list of agents.
 
         Returns:
-            生存しているエージェントのリスト。
+            A list of alive agents contained in agent_list.
         """
         return [a for a in agent_list if self.is_alive(a)]
 
     def get_alive_others(self, agent_list: List[Agent]) -> List[Agent]:
-        """自分以外の生存しているエージェントのリストを返します。
+        """Return a list of alive agents that is contained in the given list of agents
+        and is not equal to myself.
 
         Args:
-            agent_list: エージェントのリスト。
+            agent_list: The list of agents.
 
         Returns:
-            自分以外の生存しているエージェントのリスト。
+            A list of alie agents that is contained in agent_list
+            and is not equal to mysef.
         """
         return self.get_alive(self.get_others(agent_list))
 
     def random_select(self, agent_list: List[Agent]) -> Agent:
-        """指定されたリストからランダムにエージェントを選びます。
+        """Return one agent randomly chosen from the given list of agents.
 
         Args:
-            agent_list: エージェントのリスト。
+            agent_list: The list of agents.
 
         Returns:
-            リストからランダムに選ばれたエージェント。
+            A agent randomly chosen from agent_list.
         """
         return random.choice(agent_list) if agent_list else AGENT_NONE
 
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
-        """ゲーム開始時の初期化を行います。"""
         self.game_info = game_info
         self.game_setting = game_setting
         self.me = game_info.me
-        # 前回ゲームの情報をクリアします。
+        # Clear fields not to bring in information from the last game.
         self.comingout_map.clear()
         self.divination_reports.clear()
         self.identification_reports.clear()
 
     def day_start(self) -> None:
-        """新しい日の開始時の処理を行います。"""
         self.talk_list_head = 0
         self.vote_candidate = AGENT_NONE
 
     def update(self, game_info: GameInfo) -> None:
-        """ゲーム情報を更新します。"""
-        self.game_info = game_info
-        for i in range(self.talk_list_head, len(game_info.talk_list)):
-            tk: Talk = game_info.talk_list[i]
+        self.game_info = game_info  # Update game information.
+        for i in range(self.talk_list_head, len(game_info.talk_list)):  # Analyze talks that have not been analyzed yet.
+            tk: Talk = game_info.talk_list[i]  # The talk to be analyzed.
             talker: Agent = tk.agent
-            if talker == self.me:
+            if talker == self.me:  # Skip my talk.
                 continue
             content: Content = Content.compile(tk.text)
             if content.topic == Topic.COMINGOUT:
@@ -149,19 +143,45 @@ class SampleVillager(AbstractPlayer):
                 self.divination_reports.append(Judge(talker, game_info.day, content.target, content.result))
             elif content.topic == Topic.IDENTIFIED:
                 self.identification_reports.append(Judge(talker, game_info.day, content.target, content.result))
-        self.talk_list_head = len(game_info.talk_list)
+        self.talk_list_head = len(game_info.talk_list)  # All done.
 
     def talk(self) -> Content:
-        """発言内容を生成します。"""
-        fake_seers = [j.agent for j in self.divination_reports
-                      if j.target == self.me and j.result == Species.WEREWOLF]
-        reported_wolves = [j.target for j in self.divination_reports
-                           if j.agent not in fake_seers and j.result == Species.WEREWOLF]
-        candidates = self.get_alive_others(reported_wolves)
+        # Choose an agent to be voted for while talking.
+        #
+        # The list of fake seers that reported me as a werewolf.
+        fake_seers: List[Agent] = [j.agent for j in self.divination_reports
+                                   if j.target == self.me and j.result == Species.WEREWOLF]
+        # Vote for one of the alive agents that were judged as werewolves by non-fake seers.
+        reported_wolves: List[Agent] = [j.target for j in self.divination_reports
+                                        if j.agent not in fake_seers and j.result == Species.WEREWOLF]
+        candidates: List[Agent] = self.get_alive_others(reported_wolves)
+        # Vote for one of the alive fake seers if there are no candidates.
+
+        
+        # 霊媒師が2人以上いるときローラー
+        medium_co_count = sum(1 for agent, role in self.comingout_map.items() if role == Role.MEDIUM)
+        if medium_co_count >= 2:
+            candidates = [
+                agent for agent, role in self.comingout_map.items()
+                if role == Role.SEER and self.is_alive(agent)
+            ]
+
+        seer_co_count = sum(1 for agent, role in self.comingout_map.items() if role == Role.SEER)
+
+        # 占い師が2人以上いるときローラー
+        if seer_co_count >= 2:
+            candidates = [
+                agent for agent, role in self.comingout_map.items()
+                if role == Role.SEER and self.is_alive(agent)
+            ]
+
+
         if not candidates:
             candidates = self.get_alive(fake_seers)
+        # Vote for one of the alive agents if there are no candidates.
         if not candidates:
             candidates = self.get_alive_others(self.game_info.agent_list)
+        # Declare which to vote for if not declare yet or the candidate is changed.
         if self.vote_candidate == AGENT_NONE or self.vote_candidate not in candidates:
             self.vote_candidate = self.random_select(candidates)
             if self.vote_candidate != AGENT_NONE:
@@ -169,6 +189,19 @@ class SampleVillager(AbstractPlayer):
         return CONTENT_SKIP
 
     def vote(self) -> Agent:
-        """投票対象を決定します。"""
         return self.vote_candidate if self.vote_candidate != AGENT_NONE else self.me
 
+    def attack(self) -> Agent:
+        raise NotImplementedError()
+
+    def divine(self) -> Agent:
+        raise NotImplementedError()
+
+    def guard(self) -> Agent:
+        raise NotImplementedError()
+
+    def whisper(self) -> Content:
+        raise NotImplementedError()
+
+    def finish(self) -> None:
+        pass

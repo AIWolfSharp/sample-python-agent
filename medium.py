@@ -30,22 +30,17 @@ from villager import SampleVillager
 class SampleMedium(SampleVillager):
     """ Sample medium agent. """
 
-    co_date: int
-    """Scheduled comingout date."""
-    found_wolf: bool
-    """Whether or not a werewolf is found."""
-    has_co: bool
-    """Whether or not comingout has done."""
-    my_judge_queue: deque[Judge]
-    """Queue of medium results."""
-
     def __init__(self) -> None:
         """Initialize a new instance of SampleMedium."""
         super().__init__()
-        self.co_date = 0
-        self.found_wolf = False
-        self.has_co = False
-        self.my_judge_queue = deque()
+        self.co_date: int = 0
+        """Scheduled comingout date."""
+        self.found_wolf: bool = False
+        """Whether or not a werewolf is found."""
+        self.has_co: bool = False
+        """Whether or not comingout has done."""
+        self.my_judge_queue: deque[Judge] = deque()
+        """Queue of medium results."""
 
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
         super().initialize(game_info, game_setting)

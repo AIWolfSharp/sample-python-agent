@@ -24,13 +24,11 @@ from villager import SampleVillager
 class SampleBodyguard(SampleVillager):
     """Sample bodyguard agent."""
 
-    to_be_guarded: Agent
-    """Target of guard."""
-
     def __init__(self) -> None:
         """Initialize a new instance of SampleBodyguard."""
         super().__init__()
-        self.to_be_guarded = AGENT_NONE
+        self.to_be_guarded: Agent = AGENT_NONE
+        """Target of guard."""
 
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
         super().initialize(game_info, game_setting)

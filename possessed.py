@@ -17,7 +17,6 @@
 
 import random
 from collections import deque
-from typing import Deque
 
 from aiwolf import (Agent, ComingoutContentBuilder, Content,
                     DivinedResultContentBuilder, GameInfo, GameSetting,
@@ -32,31 +31,23 @@ from villager import SampleVillager
 class SamplePossessed(SampleVillager):
     """Sample possessed agent."""
 
-    fake_role: Role
-    """Fake role."""
-    co_date: int
-    """Scheduled comingout date."""
-    has_co: bool
-    """Whether or not comingout has done."""
-    my_judgee_queue: Deque[Judge]
-    """Queue of fake judgements."""
-    not_judged_agents: list[Agent]
-    """Agents that have not been judged."""
-    num_wolves: int
-    """The number of werewolves."""
-    werewolves: list[Agent]
-    """Fake werewolves."""
-
     def __init__(self) -> None:
         """Initialize a new instance of SamplePossessed."""
         super().__init__()
-        self.fake_role = Role.SEER
-        self.co_date = 0
-        self.has_co = False
-        self.my_judgee_queue = deque()
-        self.not_judged_agents = []
-        self.num_wolves = 0
-        self.werewolves = []
+        self.fake_role: Role = Role.SEER
+        """Fake role."""
+        self.co_date: int = 0
+        """Scheduled comingout date."""
+        self.has_co: bool = False
+        """Whether or not comingout has done."""
+        self.my_judgee_queue: deque[Judge] = deque()
+        """Queue of fake judgements."""
+        self.not_judged_agents: list[Agent] = []
+        """Agents that have not been judged."""
+        self.num_wolves: int = 0
+        """The number of werewolves."""
+        self.werewolves: list[Agent] = []
+        """Fake werewolves."""
 
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
         super().initialize(game_info, game_setting)

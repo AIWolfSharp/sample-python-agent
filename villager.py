@@ -28,33 +28,24 @@ from const import CONTENT_SKIP
 class SampleVillager(AbstractPlayer):
     """Sample villager agent."""
 
-    me: Agent
-    """Myself."""
-    vote_candidate: Agent
-    """Candidate for voting."""
-    game_info: GameInfo
-    """Information about current game."""
-    game_setting: GameSetting
-    """Settings of current game."""
-    comingout_map: dict[Agent, Role]
-    """Mapping between an agent and the role it claims that it is."""
-    divination_reports: list[Judge]
-    """Time series of divination reports."""
-    identification_reports: list[Judge]
-    """Time series of identification reports."""
-    talk_list_head: int
-    """Index of the talk to be analysed next."""
-
     def __init__(self) -> None:
         """Initialize a new instance of SampleVillager."""
-
-        self.me = AGENT_NONE
-        self.vote_candidate = AGENT_NONE
-        self.game_info = None  # type: ignore
-        self.comingout_map = {}
-        self.divination_reports = []
-        self.identification_reports = []
-        self.talk_list_head = 0
+        self.me: Agent = AGENT_NONE
+        """Myself."""
+        self.vote_candidate: Agent = AGENT_NONE
+        """Candidate for voting."""
+        self.game_info: GameInfo = None  # type: ignore
+        """Information about current game."""
+        self.game_setting: GameSetting = None  # type: ignore
+        """Settings of current game."""
+        self.comingout_map: dict[Agent, Role] = {}
+        """Mapping between an agent and the role it claims that it is."""
+        self.divination_reports: list[Judge] = []
+        """Time series of divination reports."""
+        self.identification_reports: list[Judge] = []
+        """Time series of identification reports."""
+        self.talk_list_head: int = 0
+        """Index of the talk to be analysed next."""
 
     def is_alive(self, agent: Agent) -> bool:
         """Return whether the agent is alive.

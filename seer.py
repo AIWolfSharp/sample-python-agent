@@ -30,25 +30,19 @@ from villager import SampleVillager
 class SampleSeer(SampleVillager):
     """Sample seer agent."""
 
-    co_date: int
-    """Scheduled comingout date."""
-    has_co: bool
-    """Whether or not comingout has done."""
-    my_judge_queue: deque[Judge]
-    """Queue of divination results."""
-    not_divined_agents: list[Agent]
-    """Agents that have not been divined."""
-    werewolves: list[Agent]
-    """Found werewolves."""
-
     def __init__(self) -> None:
         """Initialize a new instance of SampleSeer."""
         super().__init__()
-        self.co_date = 0
-        self.has_co = False
-        self.my_judge_queue = deque()
-        self.not_divined_agents = []
-        self.werewolves = []
+        self.co_date: int = 0
+        """Scheduled comingout date."""
+        self.has_co: bool = False
+        """Whether or not comingout has done."""
+        self.my_judge_queue: deque[Judge] = deque()
+        """Queue of divination results."""
+        self.not_divined_agents: list[Agent] = []
+        """Agents that have not been divined."""
+        self.werewolves: list[Agent] = []
+        """Found werewolves."""
 
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
         super().initialize(game_info, game_setting)

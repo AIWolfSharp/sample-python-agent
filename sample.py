@@ -27,22 +27,14 @@ from werewolf import SampleWerewolf
 
 class SamplePlayer(AbstractPlayer):
 
-    villager: AbstractPlayer
-    bodyguard: AbstractPlayer
-    medium: AbstractPlayer
-    seer: AbstractPlayer
-    possessed: AbstractPlayer
-    werewolf: AbstractPlayer
-    player: AbstractPlayer
-
     def __init__(self) -> None:
-        self.villager = SampleVillager()
-        self.bodyguard = SampleBodyguard()
-        self.medium = SampleMedium()
-        self.seer = SampleSeer()
-        self.possessed = SamplePossessed()
-        self.werewolf = SampleWerewolf()
-        self.player = self.villager
+        self.villager: AbstractPlayer = SampleVillager()
+        self.bodyguard: AbstractPlayer = SampleBodyguard()
+        self.medium: AbstractPlayer = SampleMedium()
+        self.seer: AbstractPlayer = SampleSeer()
+        self.possessed: AbstractPlayer = SamplePossessed()
+        self.werewolf: AbstractPlayer = SampleWerewolf()
+        self.player: AbstractPlayer = self.villager
 
     def attack(self) -> Agent:
         return self.player.attack()

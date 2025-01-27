@@ -28,19 +28,15 @@ from possessed import SamplePossessed
 class SampleWerewolf(SamplePossessed):
     """Sample werewolf agent."""
 
-    allies: list[Agent]
-    """Allies."""
-    humans: list[Agent]
-    """Humans."""
-    attack_vote_candidate: Agent
-    """The candidate for the attack voting."""
-
     def __init__(self) -> None:
         """Initialize a new instance of SampleWerewolf."""
         super().__init__()
-        self.allies = []
-        self.humans = []
-        self.attack_vote_candidate = AGENT_NONE
+        self.allies: list[Agent] = []
+        """Allies."""
+        self.humans: list[Agent] = []
+        """Humans."""
+        self.attack_vote_candidate: Agent = AGENT_NONE
+        """The candidate for the attack voting."""
 
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
         super().initialize(game_info, game_setting)

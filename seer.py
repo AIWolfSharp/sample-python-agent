@@ -16,7 +16,7 @@
 # limitations under the License.
 
 from collections import deque
-from typing import Deque, List, Optional
+from typing import Optional
 
 from aiwolf import (Agent, ComingoutContentBuilder, Content,
                     DivinedResultContentBuilder, GameInfo, GameSetting, Judge,
@@ -34,11 +34,11 @@ class SampleSeer(SampleVillager):
     """Scheduled comingout date."""
     has_co: bool
     """Whether or not comingout has done."""
-    my_judge_queue: Deque[Judge]
+    my_judge_queue: deque[Judge]
     """Queue of divination results."""
-    not_divined_agents: List[Agent]
+    not_divined_agents: list[Agent]
     """Agents that have not been divined."""
-    werewolves: List[Agent]
+    werewolves: list[Agent]
     """Found werewolves."""
 
     def __init__(self) -> None:
@@ -79,7 +79,7 @@ class SampleSeer(SampleVillager):
             judge: Judge = self.my_judge_queue.popleft()
             return Content(DivinedResultContentBuilder(judge.target, judge.result))
         # Vote for one of the alive werewolves.
-        candidates: List[Agent] = self.get_alive(self.werewolves)
+        candidates: list[Agent] = self.get_alive(self.werewolves)
         # Vote for one of the alive fake seers if there are no candidates.
         if not candidates:
             candidates = self.get_alive([a for a in self.comingout_map

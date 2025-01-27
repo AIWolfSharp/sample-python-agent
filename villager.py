@@ -16,7 +16,6 @@
 # limitations under the License.
 
 import random
-from typing import Dict, List
 
 from aiwolf import (AbstractPlayer, Agent, Content, GameInfo, GameSetting,
                     Judge, Role, Species, Status, Talk, Topic,
@@ -37,11 +36,11 @@ class SampleVillager(AbstractPlayer):
     """Information about current game."""
     game_setting: GameSetting
     """Settings of current game."""
-    comingout_map: Dict[Agent, Role]
+    comingout_map: dict[Agent, Role]
     """Mapping between an agent and the role it claims that it is."""
-    divination_reports: List[Judge]
+    divination_reports: list[Judge]
     """Time series of divination reports."""
-    identification_reports: List[Judge]
+    identification_reports: list[Judge]
     """Time series of identification reports."""
     talk_list_head: int
     """Index of the talk to be analysed next."""
@@ -68,7 +67,7 @@ class SampleVillager(AbstractPlayer):
         """
         return self.game_info.status_map[agent] == Status.ALIVE
 
-    def get_others(self, agent_list: List[Agent]) -> List[Agent]:
+    def get_others(self, agent_list: list[Agent]) -> list[Agent]:
         """Return a list of agents excluding myself from the given list of agents.
 
         Args:
@@ -79,7 +78,7 @@ class SampleVillager(AbstractPlayer):
         """
         return [a for a in agent_list if a != self.me]
 
-    def get_alive(self, agent_list: List[Agent]) -> List[Agent]:
+    def get_alive(self, agent_list: list[Agent]) -> list[Agent]:
         """Return a list of alive agents contained in the given list of agents.
 
         Args:
@@ -90,7 +89,7 @@ class SampleVillager(AbstractPlayer):
         """
         return [a for a in agent_list if self.is_alive(a)]
 
-    def get_alive_others(self, agent_list: List[Agent]) -> List[Agent]:
+    def get_alive_others(self, agent_list: list[Agent]) -> list[Agent]:
         """Return a list of alive agents that is contained in the given list of agents
         and is not equal to myself.
 
@@ -103,7 +102,7 @@ class SampleVillager(AbstractPlayer):
         """
         return self.get_alive(self.get_others(agent_list))
 
-    def random_select(self, agent_list: List[Agent]) -> Agent:
+    def random_select(self, agent_list: list[Agent]) -> Agent:
         """Return one agent randomly chosen from the given list of agents.
 
         Args:
@@ -147,12 +146,12 @@ class SampleVillager(AbstractPlayer):
         # Choose an agent to be voted for while talking.
         #
         # The list of fake seers that reported me as a werewolf.
-        fake_seers: List[Agent] = [j.agent for j in self.divination_reports
+        fake_seers: list[Agent] = [j.agent for j in self.divination_reports
                                    if j.target == self.me and j.result == Species.WEREWOLF]
         # Vote for one of the alive agents that were judged as werewolves by non-fake seers.
-        reported_wolves: List[Agent] = [j.target for j in self.divination_reports
+        reported_wolves: list[Agent] = [j.target for j in self.divination_reports
                                         if j.agent not in fake_seers and j.result == Species.WEREWOLF]
-        candidates: List[Agent] = self.get_alive_others(reported_wolves)
+        candidates: list[Agent] = self.get_alive_others(reported_wolves)
         # Vote for one of the alive fake seers if there are no candidates.
         if not candidates:
             candidates = self.get_alive(fake_seers)

@@ -16,7 +16,6 @@
 # limitations under the License.
 
 import random
-from typing import List
 
 from aiwolf import (Agent, AttackContentBuilder, ComingoutContentBuilder,
                     Content, GameInfo, GameSetting, Judge, Role, Species)
@@ -29,9 +28,9 @@ from possessed import SamplePossessed
 class SampleWerewolf(SamplePossessed):
     """Sample werewolf agent."""
 
-    allies: List[Agent]
+    allies: list[Agent]
     """Allies."""
-    humans: List[Agent]
+    humans: list[Agent]
     """Humans."""
     attack_vote_candidate: Agent
     """The candidate for the attack voting."""

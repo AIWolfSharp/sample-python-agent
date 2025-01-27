@@ -15,8 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import List
-
 from aiwolf import Agent, GameInfo, GameSetting, Role, Species
 from aiwolf.constant import AGENT_NONE
 
@@ -40,7 +38,7 @@ class SampleBodyguard(SampleVillager):
 
     def guard(self) -> Agent:
         # Guard one of the alive non-fake seers.
-        candidates: List[Agent] = self.get_alive([j.agent for j in self.divination_reports
+        candidates: list[Agent] = self.get_alive([j.agent for j in self.divination_reports
                                                   if j.result != Species.WEREWOLF or j.target != self.me])
         # Guard one of the alive mediums if there are no candidates.
         if not candidates:

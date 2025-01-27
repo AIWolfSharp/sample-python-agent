@@ -17,7 +17,7 @@
 
 import random
 from collections import deque
-from typing import Deque, List
+from typing import Deque
 
 from aiwolf import (Agent, ComingoutContentBuilder, Content,
                     DivinedResultContentBuilder, GameInfo, GameSetting,
@@ -40,11 +40,11 @@ class SamplePossessed(SampleVillager):
     """Whether or not comingout has done."""
     my_judgee_queue: Deque[Judge]
     """Queue of fake judgements."""
-    not_judged_agents: List[Agent]
+    not_judged_agents: list[Agent]
     """Agents that have not been judged."""
     num_wolves: int
     """The number of werewolves."""
-    werewolves: List[Agent]
+    werewolves: list[Agent]
     """Fake werewolves."""
 
     def __init__(self) -> None:
@@ -113,7 +113,7 @@ class SamplePossessed(SampleVillager):
             elif self.fake_role == Role.MEDIUM:
                 return Content(IdentContentBuilder(judge.target, judge.result))
         # Vote for one of the alive fake werewolves.
-        candidates: List[Agent] = self.get_alive(self.werewolves)
+        candidates: list[Agent] = self.get_alive(self.werewolves)
         # Vote for one of the alive agent that declared itself the same role of Possessed
         # if there are no candidates.
         if not candidates:
